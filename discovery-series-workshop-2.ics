@@ -3,12 +3,12 @@ VERSION:2.0
 PRODID:-//Calendar Link Maker//EN
 CALSCALE:GREGORIAN
 BEGIN:VEVENT
-UID:20250813T170000Z-r8dlwv7@calmaker
-DTSTAMP:20260617T000432Z
+UID:20250813T170000Z-yq3c45s@calmaker
+DTSTAMP:20260617T093502Z
 DTSTART:20250813T170000Z
 DTEND:20250813T180000Z
 SUMMARY:Discovery Series Workshop 2
-DESCRIPTION:Come prepared to engage\, reflect\, and discover how personal transformation shapes the way you lead transformation in others.\n\nWhat to Expect:\n- Interactive learning and discussion\n- A practical definition of transformation in leadership\n- Personal reflection exercises\n- Practical leadership insights\n- Live Q&A\n- Introduction to the ROOTED leadership journey\n\n## Rooted Cohort\nIf you wish to go even deeper with us we are running a Rooted Cohort for leaders wanting to qualify as personal coaches.\nVisit: https://lftleadership.com/rooted\n\nJoin Zoom Meeting: https://us02web.zoom.us/j/86312144391?pwd=NoSGKPYaUrDi5MCAC93sLiGgJUoNvB.1
+DESCRIPTION:Come prepared to engage\, reflect\, and discover how personal transformation shapes the way you lead transformation in others.\n\nWhat to Expect:\n- Interactive learning and discussion\n- A practical definition of transformation in leadership\n- Personal reflection exercises\n- Practical leadership insights\n- Live Q&A\n- Introduction to the ROOTED leadership journey\n\nJoin Zoom Meeting: https://us02web.zoom.us/j/86312144391?pwd=NoSGKPYaUrDi5MCAC93sLiGgJUoNvB.1
 LOCATION:https://us02web.zoom.us/j/86312144391?pwd=NoSGKPYaUrDi5MCAC93sLiGgJUoNvB.1
 END:VEVENT
 END:VCALENDAR
