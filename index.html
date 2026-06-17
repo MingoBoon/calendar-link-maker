@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar Link Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#E8E5DD;
+    --surface:#FCFCFA;
+    --ink:#1E2622;
+    --muted:#6B6F69;
+    --green:#2F5D3E;
+    --green-press:#264C33;
+    --clay:#C2683B;
+    --line:#D8D4C9;
+    --line-soft:#E6E2D8;
+    --shadow:0 1px 2px rgba(30,38,34,.05),0 8px 28px rgba(30,38,34,.07);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--page);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+
+  header.masthead{margin-bottom:32px}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--clay);margin:0 0 10px;
+  }
+  h1{
+    font-family:"Fraunces",serif;
+    font-weight:500;font-size:clamp(30px,5vw,46px);
+    line-height:1.02;margin:0 0 10px;letter-spacing:-.01em;
+  }
+  .lede{color:var(--muted);max-width:56ch;margin:0;font-size:15px}
+
+  .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;margin-top:34px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr;gap:22px}}
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:26px;
+  }
+  .panel h2{
+    font-family:"Fraunces",serif;font-weight:500;font-size:19px;
+    margin:0 0 4px;letter-spacing:-.01em;
+  }
+  .panel .sub{color:var(--muted);font-size:13px;margin:0 0 20px}
+
+  label{display:block;font-size:12.5px;font-weight:500;margin:0 0 6px;color:var(--ink)}
+  .field{margin-bottom:16px}
+  .row{display:flex;gap:12px}
+  .row>.field{flex:1;margin-bottom:16px}
+  input,select,textarea{
+    width:100%;font:inherit;font-size:14px;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:9px;
+    padding:10px 12px;transition:border-color .15s,box-shadow .15s;
+  }
+  textarea{resize:vertical;min-height:74px;line-height:1.45}
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--green);
+    box-shadow:0 0 0 3px rgba(47,93,62,.13);
+  }
+  .hint{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+
+  /* ---- Invitation preview (signature) ---- */
+  .invite{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .invite-top{display:flex;gap:18px;padding:24px 24px 20px;border-bottom:1px dashed var(--line)}
+  .tile{
+    flex:0 0 auto;width:78px;text-align:center;
+    border:1px solid var(--line);border-radius:11px;overflow:hidden;
+    background:#fff;box-shadow:0 2px 0 var(--line-soft);
+  }
+  .tile .m{background:var(--clay);color:#fff;font-family:"IBM Plex Mono",monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:5px 0}
+  .tile .d{font-family:"Fraunces",serif;font-size:34px;font-weight:500;padding:6px 0 4px;line-height:1}
+  .tile .w{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding-bottom:8px}
+  .invite-head{min-width:0}
+  .invite-head .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  .invite-head .t{font-family:"Fraunces",serif;font-size:23px;font-weight:500;line-height:1.1;margin:0 0 8px;word-break:break-word}
+  .invite-head .when{font-size:13px;color:var(--ink);margin:0 0 2px}
+  .invite-head .where{font-size:12px;color:var(--muted);margin:6px 0 0;word-break:break-all}
+  .invite-body{padding:18px 24px 22px}
+  .invite-body p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.55}
+
+  /* ---- Output buttons ---- */
+  .section-label{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:26px 0 12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+  .cal-list{display:flex;flex-direction:column;gap:10px}
+  .cal{
+    display:flex;align-items:center;gap:12px;
+    border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:#fff;
+  }
+  .cal .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .cal .nm{font-weight:500;font-size:14px;flex:1}
+  .cal .acts{display:flex;gap:8px}
+  a.btn,button.btn{
+    font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;
+    border-radius:8px;padding:7px 13px;border:1px solid var(--green);
+    background:var(--green);color:#fff;text-decoration:none;display:inline-block;
+    transition:background .15s,transform .05s;white-space:nowrap;
+  }
+  a.btn:hover,button.btn:hover{background:var(--green-press)}
+  a.btn:active,button.btn:active{transform:translateY(1px)}
+  .btn.ghost{background:#fff;color:var(--green);border-color:var(--line)}
+  .btn.ghost:hover{background:#F4F2EC;color:var(--green-press)}
+  .btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+
+  .apple-box{border:1px solid var(--line);border-radius:11px;padding:16px;background:#fff;margin-top:4px}
+  .apple-box h3{font-family:"Fraunces",serif;font-weight:500;font-size:16px;margin:0 0 4px}
+  .apple-box p{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+  textarea.code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:#FBFAF6;min-height:120px}
+  .apple-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .url-row{display:flex;gap:8px;margin-top:14px}
+  .url-row input{font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+  .apple-final{margin-top:12px;display:none}
+  .apple-final.show{display:block}
+
+  .standalone{margin-top:22px;border-top:1px solid var(--line);padding-top:20px}
+  .standalone h3{font-family:"Fraunces",serif;font-weight:500;font-size:16px;margin:0 0 4px}
+  .standalone p{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Add-to-calendar links · no subscription</p>
+    <h1>Calendar Link Maker</h1>
+    <p class="lede">Type your event once. Get ready-to-paste “Add to calendar” links for Google, Outlook, Yahoo, and Apple — for the buttons in your Flodesk emails.</p>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: form -->
+    <section class="panel" aria-label="Event details">
+      <h2>Event details</h2>
+      <p class="sub">Everything updates live as you type.</p>
+
+      <div class="field">
+        <label for="title">Event name</label>
+        <input id="title" type="text" value="Discovery Series Workshop">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="date">Date</label>
+          <input id="date" type="date" value="2025-07-21">
+        </div>
+        <div class="field">
+          <label for="time">Start time</label>
+          <input id="time" type="time" value="13:00">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="tz">Time zone</label>
+          <select id="tz"></select>
+        </div>
+        <div class="field">
+          <label for="dur">Duration (min)</label>
+          <input id="dur" type="number" min="5" step="5" value="60">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="loc">Location / Zoom link</label>
+        <input id="loc" type="text" value="https://us02web.zoom.us/launch/jc/89003430294">
+      </div>
+
+      <div class="field">
+        <label for="desc">Description</label>
+        <textarea id="desc">Discovery is an invitation to pause, step away from performance, and look at the deeper foundations of identity and calling.</textarea>
+        <p class="hint">The Zoom link is added to the description automatically, so it shows up inside the calendar event too.</p>
+      </div>
+    </section>
+
+    <!-- RIGHT: preview + outputs -->
+    <section aria-label="Preview and links">
+      <div class="invite" id="invite">
+        <div class="invite-top">
+          <div class="tile">
+            <div class="m" id="tMonth">JUL</div>
+            <div class="d" id="tDay">21</div>
+            <div class="w" id="tWeek">Mon</div>
+          </div>
+          <div class="invite-head">
+            <p class="k">You're invited</p>
+            <p class="t" id="pTitle">Discovery Series Workshop</p>
+            <p class="when" id="pWhen">Mon 21 Jul 2025 · 1:00–2:00 PM</p>
+            <p class="where" id="pWhere">https://us02web.zoom.us/launch/jc/89003430294</p>
+          </div>
+        </div>
+        <div class="invite-body">
+          <p id="pDesc">Discovery is an invitation to pause…</p>
+        </div>
+      </div>
+
+      <p class="section-label">Direct links — one button each</p>
+      <div class="cal-list" id="calList"></div>
+
+      <div class="apple-box">
+        <h3>Apple Calendar</h3>
+        <p>Apple needs a calendar file (<code>.ics</code>). Two ways to handle it:</p>
+
+        <textarea class="code" id="icsContent" readonly aria-label="Calendar file contents"></textarea>
+        <div class="apple-actions">
+          <button class="btn" id="dlIcs">Download .ics file</button>
+          <button class="btn ghost" id="copyIcs">Copy file contents</button>
+          <a class="btn ghost" id="dataIcs" href="#">No-host Apple link</a>
+        </div>
+
+        <div class="url-row">
+          <input type="text" id="hostedUrl" placeholder="Paste hosted .ics URL here (Squarespace, GitHub…)">
+          <button class="btn ghost" id="useUrl">Use it</button>
+        </div>
+        <div class="apple-final" id="appleFinal">
+          <p class="hint" style="margin-bottom:6px">Apple Calendar button URL — paste into Flodesk:</p>
+          <div class="url-row">
+            <input type="text" id="appleUrl" readonly>
+            <button class="btn" id="copyApple">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="standalone">
+        <h3>One button for everything</h3>
+        <p>Prefer a single “Add to calendar” button? Download a small page that shows all four options, host it, and link your Flodesk button to it.</p>
+        <button class="btn" id="buildPage">Download chooser page</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2,'0');
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+  // ---------- timezone dropdown ----------
+  const tzSel = $('tz');
+  const local = (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'UTC';
+  let zones;
+  try { zones = Intl.supportedValuesOf('timeZone'); } catch(e){
+    zones = ['UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles',
+      'Europe/London','Europe/Paris','Europe/Berlin','Asia/Kolkata','Asia/Dubai','Asia/Singapore',
+      'Asia/Tokyo','Australia/Sydney'];
+  }
+  // put common + local first
+  const preferred = ['America/New_York','Europe/London',local];
+  const ordered = [...new Set([...preferred, ...zones])];
+  ordered.forEach(z=>{
+    const o=document.createElement('option');o.value=z;o.textContent=z.replace(/_/g,' ');
+    tzSel.appendChild(o);
+  });
+  tzSel.value = 'America/New_York';
+
+  // ---------- timezone math ----------
+  // offset (ms) between a tz wall clock and true UTC at a given instant
+  function tzOffsetMs(timeZone, date){
+    const dtf = new Intl.DateTimeFormat('en-US',{timeZone,hour12:false,
+      year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const p={}; dtf.formatToParts(date).forEach(x=>p[x.type]=x.value);
+    let hr = p.hour==='24'?'00':p.hour;
+    const asUTC = Date.UTC(+p.year,+p.month-1,+p.day,+hr,+p.minute,+p.second);
+    return asUTC - date.getTime();
+  }
+  // convert wall-clock components in a tz to the true UTC Date
+  function wallToUTC(y,mo,d,h,mi,timeZone){
+    const guess = Date.UTC(y,mo-1,d,h,mi,0);
+    let off = tzOffsetMs(timeZone, new Date(guess));
+    let real = guess - off;
+    const off2 = tzOffsetMs(timeZone, new Date(real));
+    if(off2!==off) real = guess - off2;
+    return new Date(real);
+  }
+
+  // ---------- format helpers ----------
+  const icsStamp = d => d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())
+    +'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+'Z';
+  const isoZ = d => d.toISOString().slice(0,19)+'Z';
+  function icsEsc(s){return (s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
+
+  // ---------- gather + compute ----------
+  function gather(){
+    const title=$('title').value.trim()||'Event';
+    const dateV=$('date').value;       // yyyy-mm-dd
+    const timeV=$('time').value||'00:00';
+    const tz=tzSel.value;
+    const dur=Math.max(1,parseInt($('dur').value||'60',10));
+    const loc=$('loc').value.trim();
+    let desc=$('desc').value.trim();
+    if(loc && desc.indexOf(loc)===-1) desc += (desc?'\n\n':'')+'Join Zoom Meeting: '+loc;
+
+    const [y,mo,d]=dateV.split('-').map(Number);
+    const [hh,mi]=timeV.split(':').map(Number);
+    const start=wallToUTC(y,mo,d,hh,mi,tz);
+    const end=new Date(start.getTime()+dur*60000);
+    return {title,tz,dur,loc,desc,start,end,y,mo,d,hh,mi};
+  }
+
+  function links(e){
+    const g='https://calendar.google.com/calendar/render?action=TEMPLATE'
+      +'&text='+encodeURIComponent(e.title)
+      +'&dates='+icsStamp(e.start)+'/'+icsStamp(e.end)
+      +'&details='+encodeURIComponent(e.desc)
+      +'&location='+encodeURIComponent(e.loc);
+    const oCommon='&subject='+encodeURIComponent(e.title)
+      +'&startdt='+isoZ(e.start)+'&enddt='+isoZ(e.end)
+      +'&body='+encodeURIComponent(e.desc)+'&location='+encodeURIComponent(e.loc)
+      +'&path=/calendar/action/compose&rru=addevent';
+    const oLive='https://outlook.live.com/calendar/0/deeplink/compose?'+oCommon.slice(1);
+    const oOffice='https://outlook.office.com/calendar/0/deeplink/compose?'+oCommon.slice(1);
+    const ya='https://calendar.yahoo.com/?v=60&title='+encodeURIComponent(e.title)
+      +'&st='+icsStamp(e.start)+'&et='+icsStamp(e.end)
+      +'&desc='+encodeURIComponent(e.desc)+'&in_loc='+encodeURIComponent(e.loc);
+    return {g,oLive,oOffice,ya};
+  }
+
+  function icsText(e){
+    return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Calendar Link Maker//EN','CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT','UID:'+icsStamp(e.start)+'-'+Math.random().toString(36).slice(2,9)+'@calmaker',
+      'DTSTAMP:'+icsStamp(new Date()),'DTSTART:'+icsStamp(e.start),'DTEND:'+icsStamp(e.end),
+      'SUMMARY:'+icsEsc(e.title),'DESCRIPTION:'+icsEsc(e.desc),'LOCATION:'+icsEsc(e.loc),
+      'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  }
+
+  // ---------- render ----------
+  const CALS=[
+    {key:'g',   nm:'Google Calendar', color:'#4F7DD8'},
+    {key:'oLive',nm:'Outlook.com',    color:'#2F7BB8'},
+    {key:'oOffice',nm:'Outlook (work / 365)', color:'#1B5E8C'},
+    {key:'ya',  nm:'Yahoo Calendar',  color:'#7B5BC4'}
+  ];
+
+  function fmtWhen(e){
+    const opt={timeZone:e.tz};
+    const day=new Intl.DateTimeFormat('en-GB',{...opt,weekday:'short',day:'2-digit',month:'short',year:'numeric'}).format(e.start);
+    const t1=new Intl.DateTimeFormat('en-US',{...opt,hour:'numeric',minute:'2-digit'}).format(e.start);
+    const t2=new Intl.DateTimeFormat('en-US',{...opt,hour:'numeric',minute:'2-digit'}).format(e.end);
+    return {day,range:t1.replace(/\s?[AP]M$/i,'')+'–'+t2};
+  }
+
+  let current={};
+  function render(){
+    const e=gather(); current.e=e;
+    const L=links(e); current.L=L;
+    const ics=icsText(e); current.ics=ics;
+
+    // preview tile
+    $('tMonth').textContent=MONTHS[e.mo-1];
+    $('tDay').textContent=e.d;
+    $('tWeek').textContent=new Intl.DateTimeFormat('en-US',{timeZone:e.tz,weekday:'short'}).format(e.start);
+    $('pTitle').textContent=e.title;
+    const w=fmtWhen(e);
+    $('pWhen').textContent=w.day+' · '+w.range;
+    $('pWhere').textContent=e.loc||'No location set';
+    $('pDesc').textContent=$('desc').value.trim()||'No description yet.';
+
+    // cal buttons
+    const list=$('calList'); list.innerHTML='';
+    CALS.forEach(c=>{
+      const row=document.createElement('div');row.className='cal';
+      row.innerHTML='<span class="dot" style="background:'+c.color+'"></span>'
+        +'<span class="nm">'+c.nm+'</span><span class="acts">'
+        +'<a class="btn ghost" target="_blank" rel="noopener" href="'+L[c.key].replace(/"/g,'&quot;')+'">Test</a>'
+        +'<button class="btn" data-link="'+c.key+'">Copy link</button></span>';
+      list.appendChild(row);
+    });
+
+    // apple
+    $('icsContent').value=ics;
+    $('dataIcs').href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+    $('dataIcs').setAttribute('download',(e.title.replace(/[^\w]+/g,'-').toLowerCase()||'event')+'.ics');
+    refreshAppleFinal();
+  }
+
+  function refreshAppleFinal(){
+    const u=$('hostedUrl').value.trim();
+    if(u){$('appleUrl').value=u;$('appleFinal').classList.add('show');}
+    else {$('appleFinal').classList.remove('show');}
+  }
+
+  // ---------- clipboard ----------
+  function copy(text){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(()=>toast('Copied')).catch(()=>fallbackCopy(text));
+    } else { fallbackCopy(text); }
+  }
+  function fallbackCopy(text){
+    const ta=document.createElement('textarea');ta.value=text;
+    ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);
+    ta.select();try{document.execCommand('copy');toast('Copied');}catch(e){toast('Press Ctrl/Cmd+C');}
+    document.body.removeChild(ta);
+  }
+  let tT;
+  function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),1600);}
+
+  // ---------- download helper ----------
+  function download(filename,text,type){
+    const blob=new Blob([text],{type:type||'text/plain'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  }
+
+  // ---------- standalone chooser page ----------
+  function buildChooser(){
+    const e=current.e,L=current.L,ics=current.ics;
+    const hosted=$('hostedUrl').value.trim();
+    const appleHref = hosted || ('data:text/calendar;charset=utf-8,'+encodeURIComponent(ics));
+    const w=fmtWhen(e);
+    const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const rows=[
+      ['Google Calendar',L.g],['Outlook.com',L.oLive],
+      ['Outlook (work / 365)',L.oOffice],['Yahoo Calendar',L.ya],
+      ['Apple Calendar',appleHref]
+    ].map(([n,u])=>'<a class="opt" href="'+esc(u)+'"'+(n==='Apple Calendar'&&!hosted?' download="event.ics"':' target="_blank" rel="noopener"')+'>'+esc(n)+'<span>→</span></a>').join('\n');
+    const page='<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'
+      +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+      +'<title>Add to calendar — '+esc(e.title)+'</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">'
+      +'<style>body{margin:0;background:#E8E5DD;font-family:"IBM Plex Sans",sans-serif;color:#1E2622;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}'
+      +'.card{background:#FCFCFA;border:1px solid #D8D4C9;border-radius:16px;max-width:420px;width:100%;padding:30px;box-shadow:0 10px 30px rgba(30,38,34,.08)}'
+      +'h1{font-family:"Fraunces",serif;font-weight:500;font-size:24px;margin:0 0 4px}'
+      +'.when{color:#6B6F69;font-size:14px;margin:0 0 22px}'
+      +'.opt{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border:1px solid #D8D4C9;border-radius:11px;text-decoration:none;color:#1E2622;font-weight:500;font-size:15px;margin-bottom:10px;transition:background .15s}'
+      +'.opt:hover{background:#F4F2EC}.opt span{color:#2F5D3E}</style></head><body>'
+      +'<div class="card"><h1>'+esc(e.title)+'</h1><p class="when">'+esc(w.day+' · '+w.range)+'</p>'
+      +rows+'</div></body></html>';
+    download('add-to-calendar.html',page,'text/html');
+    toast(hosted?'Page downloaded':'Downloaded (Apple uses no-host link)');
+  }
+
+  // ---------- events ----------
+  ['title','date','time','tz','dur','loc','desc'].forEach(id=>{
+    $(id).addEventListener('input',render);
+    $(id).addEventListener('change',render);
+  });
+  $('calList').addEventListener('click',ev=>{
+    const b=ev.target.closest('button[data-link]');
+    if(b) copy(current.L[b.dataset.link]);
+  });
+  $('copyIcs').addEventListener('click',()=>copy(current.ics));
+  $('dlIcs').addEventListener('click',()=>{
+    const name=(current.e.title.replace(/[^\w]+/g,'-').toLowerCase()||'event')+'.ics';
+    download(name,current.ics,'text/calendar');
+  });
+  $('hostedUrl').addEventListener('input',refreshAppleFinal);
+  $('useUrl').addEventListener('click',refreshAppleFinal);
+  $('copyApple').addEventListener('click',()=>copy($('appleUrl').value));
+  $('buildPage').addEventListener('click',buildChooser);
+
+  render();
+})();
+</script>
+</body>
+</html>
