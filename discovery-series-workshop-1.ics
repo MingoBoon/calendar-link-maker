@@ -1,0 +1,14 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Calendar Link Maker//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:20250721T170000Z-3fq9bdp@calmaker
+DTSTAMP:20260617T092139Z
+DTSTART:20250721T170000Z
+DTEND:20250721T180000Z
+SUMMARY:Discovery Series Workshop 1
+DESCRIPTION:Come prepared to engage\, reflect\, and discover how personal transformation shapes the way you lead transformation in others.\n\nWhat to Expect:\n- Interactive learning and discussion\n- A practical definition of transformation in leadership\n- Personal reflection exercises\n- Practical leadership insights\n- Live Q&A\n- Introduction to the ROOTED leadership journey\n\nJoin Zoom Meeting: https://us02web.zoom.us/j/4261060975
+LOCATION:https://us02web.zoom.us/j/4261060975
+END:VEVENT
+END:VCALENDAR
